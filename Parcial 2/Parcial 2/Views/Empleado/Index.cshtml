@@ -1,0 +1,36 @@
+﻿@using BLL;
+@using BE;
+
+<div class="jumbotron my-2">
+	<h1 class="display-4">
+		Empleados
+		<a href="/Empleado/Crear" class="btn btn-outline-success">Crear</a>
+	</h1>
+</div>
+
+<div class="row">
+	<div class="col-12">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Legajo</th>
+					<th scope="col">Nombre</th>
+					<th scope="col">Dni</th>
+					<th scope="col">Fecha de nacimiento</th>
+					<th scope="col">Sueldo</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (Empleado empleado in new EmpleadoBl().listar()) {
+				<tr>
+					<th scope="row">@empleado.legajo</th>
+					<td>@empleado.apellido, @empleado.nombre</td>
+					<td>@empleado.dni</td>
+					<td>@empleado.fecNac</td>
+					<td>$ @empleado.sueldo</td>
+				</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

@@ -1,0 +1,113 @@
+﻿@using Entidades;
+@using Negocio;
+
+<div class="jumbotron">
+	<h1>Llamadas</h1>
+</div>
+
+<div class="row">
+	<div class="col-12">
+		<div class="card my-2">
+			<div class="card-body">
+				<h5 class="card-title">Cargos del mes de un cliente</h5>
+				<label for="abonado" class="form-label">Abonado</label>
+				<select id="abonado" class="form-select" aria-label="abonado">
+					@foreach (Abonado abonado in new AbonadoBl().listar()) {
+						<option value="@abonado.idAbonado">@abonado.numero</option>
+					}
+				</select>
+				<select id="cargos_cliente_fecha" class="form-select" aria-label="cargos_cliente_fecha">
+					@foreach (string mes in Enum.GetNames(typeof(Mes))) {
+						<option value="@((int)(Mes)Enum.Parse(typeof(Mes), mes))">@mes</option>
+					}
+				</select>
+				<button onclick="cargosMesCliente()" type="button" class="btn btn-outline-primary">✔</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-12">
+		<div class="card my-2">
+			<div class="card-body">
+				<h5 class="card-title">Recaudacion por mes</h5>
+				<select id="cargos_fecha" class="form-select" aria-label="cargos_fecha">
+					@foreach (string mes in Enum.GetNames(typeof(Mes))) {
+						<option value="@((int)(Mes)Enum.Parse(typeof(Mes), mes))">@mes</option>
+					}
+				</select>
+				<button onclick="cargosMes()" type="button" class="btn btn-outline-primary">✔</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-12">
+		<div class="card my-2">
+			<div class="card-body">
+				<h5 class="card-title">Recaudacion por mes y promocion</h5>
+				<label for="promocion" class="form-label">Promocion</label>
+				<select id="promocion" class="form-select" aria-label="promocion">
+					@foreach (string tipo in Enum.GetNames(typeof(Promocion))) {
+						<option value="@tipo">@tipo</option>
+					}
+				</select>
+				<select id="cargos_fecha_promo" class="form-select" aria-label="cargos_fecha_promo">
+					@foreach (string mes in Enum.GetNames(typeof(Mes))) {
+						<option value="@((int)(Mes)Enum.Parse(typeof(Mes), mes))">@mes</option>
+					}
+				</select>
+				<button onclick="cargosMesPromo()" type="button" class="btn btn-outline-primary">✔</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-12">
+		<div class="card my-2">
+			<div class="card-body">
+				<h5 class="card-title">Porcentaje llamadas por tipo</h5>
+				<label for="tipo" class="form-label">Tipo</label>
+				<select id="tipo" class="form-select" aria-label="tipo">
+					@foreach (string tipo in Enum.GetNames(typeof(TipoTelefono))) {
+						<option value="@tipo">@tipo</option>
+					}
+				</select>
+				<button onclick="porcentajeTipo()" type="button" class="btn btn-outline-primary">✔</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	async function cargosMesCliente() {
+		const abonado = document.getElementById("abonado").value;
+		const fecha = document.getElementById("cargos_cliente_fecha").value;
+
+		const result = await get('/Reportes/CargosMesCliente?idAbonado=' + abonado + '&fecha=' + fecha);
+		console.log(result);
+		alert(result.text);
+	}
+
+	async function cargosMes() {
+		const fecha = document.getElementById("cargos_fecha").value;
+
+		const result = await get('/Reportes/CargosMes?fecha=' + fecha);
+		console.log(result);
+		alert(result.text);
+	}
+
+	async function cargosMesPromo() {
+		const fecha = document.getElementById("cargos_fecha_promo").value;
+		const promocion = document.getElementById("promocion").value;
+
+		const result = await get('/Reportes/cargosMesPromo?fecha=' + fecha + '&promocion=' + promocion);
+		console.log(result);
+		alert(result.text);
+	}
+
+	async function porcentajeTipo() {
+		const tipo = document.getElementById("tipo").value;
+
+		const result = await get('/Reportes/PorcentajeTipo?tipo=' + tipo);
+		console.log(result);
+		alert(result.text);
+	}
+</script>

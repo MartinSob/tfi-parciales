@@ -1,0 +1,54 @@
+﻿@using Entidades;
+@using Negocio;
+
+<div class="jumbotron">
+	<h1>Nueva llamada</h1>
+</div>
+
+<div class="row">
+	<div class="col-12">
+		<div class="mb-3">
+			<label for="origen" class="form-label">Origen</label>
+			<select id="origen" class="form-select" aria-label="Origen">
+				@foreach (Abonado abonado in new AbonadoBl().listar()) {
+					<option value="@abonado.idAbonado">@abonado.numero</option>
+				}
+			</select>
+		</div>
+
+		<div class="mb-3">
+			<label for="destino" class="form-label">Destino</label>
+			<select id="destino" class="form-select" aria-label="Destino">
+				@foreach (Comunicador comunicador in new ComunicadorBl().listar()) {
+					<option value="@comunicador.id">@comunicador.numero</option>
+				}
+			</select>
+		</div>
+
+		<div class="mb-3">
+			<label for="duracion" class="form-label">Duracion [minutos]</label>
+			<input type="number" class="form-control" id="duracion">
+		</div>
+
+		<div class="mb-3">
+			<input class="form-check-input" type="checkbox" value="" id="nacional">
+			<label class="form-check-label" for="nacional">
+				¿Es nacional?
+			</label>
+		</div>
+
+		<button onclick="guardar()" type="button" class="btn btn-outline-primary">✔</button>
+	</div>
+</div>
+
+<script>
+	const guardar = async () => {
+		await post('/Llamar/RealizarLLamada/', {
+			origen: document.getElementById("origen").value,
+			destino: document.getElementById("destino").value,
+			duracion: document.getElementById("duracion").value,
+			nacional: document.getElementById("nacional").checked
+		});
+		window.location.href = "/Llamar";
+	}
+</script>

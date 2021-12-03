@@ -1,0 +1,40 @@
+﻿@using Entidades;
+@using Negocio;
+
+<div class="jumbotron">
+	<h1>Llamadas</h1>
+</div>
+
+<div class="row">
+	<div class="col-12">
+		<a href="/Llamar/Crear" class="btn btn-outline-success">Crear</a>
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">Origen</th>
+					<th scope="col">Destino</th>
+					<th scope="col">Duracion</th>
+					<th scope="col">Fecha</th>
+					<th scope="col">Nacional</th>
+					<th scope="col">Costo</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (Llamada llamada in new LlamadaBl().listar()) {
+					llamada.origen = new AbonadoBl().obtener(llamada.origen.idAbonado);
+					llamada.destino = new ComunicadorBl().obtener(llamada.destino.id);
+				<tr>
+					<th scope="row">@llamada.id</th>
+					<td>@llamada.origen.numero</td>
+					<td>@llamada.destino.numero</td>
+					<td>@llamada.duracion</td>
+					<td>@llamada.fecha</td>
+					<td>@llamada.nacional</td>
+					<td>@llamada.costo</td>
+				</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

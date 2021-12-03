@@ -1,0 +1,104 @@
+﻿@using BLL;
+@using BE;
+@using Parcial_2.Models;
+@model ListModel<Recibo>
+@{
+	BE.Empleado e = new Empleado();
+}
+
+<div class="jumbotron">
+	<h1 class="display-4">
+		Recibos
+		<a href="/ReciboSueldo/Crear" class="btn btn-outline-success">Crear</a>
+	</h1>
+</div>
+
+<div class="row">
+	<div class="col-12">
+
+		<div class="accordion my-3" id="accordionExample">
+			<div class="accordion-item">
+				<h2 class="accordion-header" id="headingOne">
+					<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+						Filtros
+					</button>
+				</h2>
+				<div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+					<div class="accordion-body">
+						<div class="mb-3">
+							<label for="mes" class="form-label">Mes</label>
+							<select id="mes" class="form-select" aria-label="Tipo">
+								<option selected>Seleccione un mes</option>
+								<option value="1">Enero</option>
+								<option value="2">Febrero</option>
+								<option value="3">Marzo</option>
+								<option value="4">Abril</option>
+								<option value="5">Mayo</option>
+								<option value="6">Junio</option>
+								<option value="7">Julio</option>
+								<option value="8">Agosto</option>
+								<option value="9">Septiembre</option>
+								<option value="10">Octubre</option>
+								<option value="11">Noviembre</option>
+								<option value="12">Diciembre</option>
+							</select>
+						</div>
+						<div class="mb-3">
+							<label for="año" class="form-label">Año</label>
+							<input id="año" class="form-control" type="number" min="1900" max="2099" step="1" value="2021" />
+						</div>
+						<div class="mb-3">
+							<label for="empleado" class="form-label">Empleado</label>
+							<select id="empleado" class="form-select" aria-label="Tipo">
+								<option selected>Seleccione un empleado</option>
+								@foreach (Empleado emp in new EmpleadoBl().listar()) {
+									<option value="@emp.id">@emp.apellido, @emp.nombre</option>
+								}
+							</select>
+						</div>
+						<button type="button" class="btn btn-outline-primary" onclick="filtrar()">🔎 Filtrar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Empleado</th>
+					<th scope="col">Periodo</th>
+					<th scope="col">Básico</th>
+					<th scope="col">Total</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (Recibo recibo in Model.Items) {
+					e = new EmpleadoBl().listar(recibo.empleado.id);
+				<tr>
+					<td scope="row">@e.apellido, @e.nombre </td>
+					<td>@recibo.periodo</td>
+					<td>$ @e.sueldo</td>
+					<td>$ @recibo.total</td>
+					<td><a href="/ReciboSueldo/View/@recibo.id">Ver</a></td>
+				</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script>
+	let params = new URLSearchParams(location.search);
+	document.getElementById("año").value = params.get('año')
+	document.getElementById("mes").value = params.get('mes')
+	document.getElementById("empleado").value = params.get('empleado')
+
+	function filtrar() {
+		const año = document.getElementById("año").value;
+		const mes = document.getElementById("mes").value;
+		const empleado = document.getElementById("empleado").value;
+
+		window.location.replace('?año=' + año + '&mes=' + mes + '&empleado=' + empleado);
+	}
+</script>

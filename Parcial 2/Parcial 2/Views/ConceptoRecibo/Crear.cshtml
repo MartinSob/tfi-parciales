@@ -1,0 +1,43 @@
+﻿@model BE.Concepto
+
+<div class="jumbotron my-2">
+	<h1 class="display-4">
+		Crear concepto de recibo
+	</h1>
+</div>
+
+<form id="create">
+	<div class="mb-3">
+		<label for="descripcion" class="form-label">Descripcion</label>
+		<input type="text" class="form-control" id="descripcion">
+	</div>
+	<div class="mb-3">
+		<label for="cantidad" class="form-label">Cantidad [%]</label>
+		<input type="number" class="form-control" id="cantidad">
+	</div>
+	<div class="mb-3">
+		<label for="tipo" class="form-label">Tipo</label>
+		<select id="tipo" class="form-select" aria-label="Tipo">
+			<option value="Remunerativo" selected>Remunerativo</option>
+			<option value="Descuento">Descuento</option>
+		</select>
+	</div>
+
+	<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+<script>
+	document.getElementById("create").addEventListener("submit", async (event) => {
+		event.preventDefault();
+
+		const response = await post('/ConceptoRecibo/CreateConcept', {
+			descripcion: document.getElementById("descripcion").value,
+			cantidad: document.getElementById("cantidad").value,
+			tipo: document.getElementById("tipo").value
+		});
+		console.log(response);
+
+		window.location.replace("/ConceptoRecibo");
+	});
+</script>

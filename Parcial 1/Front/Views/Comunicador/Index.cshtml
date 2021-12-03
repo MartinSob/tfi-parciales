@@ -1,0 +1,42 @@
+﻿@using Entidades;
+@using Negocio;
+
+<div class="jumbotron">
+	<h1>Destinos</h1>
+</div>
+
+<div class="row">
+	<div class="col-12">
+		<a href="/Comunicador/Crear" class="btn btn-outline-success">Crear</a>
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">Numero</th>
+					<th scope="col">Tipo</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (Comunicador comunicador in new ComunicadorBl().listar()) {
+					<tr>
+						<th scope="row">@comunicador.id</th>
+						<td>@comunicador.numero</td>
+						<td>@comunicador.tipo.ToString()</td>
+						<td>
+							<button onclick="eliminar(@comunicador.id)" type="button" class="btn btn-outline-danger">❌</button>
+							<a href="/Comunicador/Edit/@comunicador.id" class="btn btn-outline-secondary">✏</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script>
+	const eliminar = async (id) => {
+		await get('/Comunicador/EliminarComunicador/' + id);
+		location.reload();
+	}
+</script>

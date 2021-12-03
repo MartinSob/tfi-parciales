@@ -1,0 +1,52 @@
+﻿<div class="jumbotron my-2">
+	<h1 class="display-4">
+		Crear empleado
+	</h1>
+</div>
+
+<form id="create">
+	<div class="mb-3">
+		<label for="nombre" class="form-label">Nombre</label>
+		<input type="text" class="form-control" id="nombre">
+	</div>
+	<div class="mb-3">
+		<label for="apellido" class="form-label">Apellido</label>
+		<input type="text" class="form-control" id="apellido">
+	</div>
+	<div class="mb-3">
+		<label for="dni" class="form-label">DNI</label>
+		<input type="text" class="form-control" id="dni">
+	</div>
+	<div class="mb-3">
+		<label for="legajo" class="form-label">Legajo</label>
+		<input type="text" class="form-control" id="legajo">
+	</div>
+	<div class="mb-3">
+		<label for="fecNac" class="form-label">Fecha de nacimiento</label>
+		<input type="date" class="form-control" id="fecNac">
+	</div>
+	<div class="mb-3">
+		<label for="sueldo" class="form-label">Sueldo</label>
+		<input type="text" class="form-control" id="sueldo">
+	</div>
+	<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+<script>
+	document.getElementById("create").addEventListener("submit", async (event) => {
+		event.preventDefault();
+
+		const response = await post('/Empleado/CreateEmployee', {
+			nombre: document.getElementById("nombre").value,
+			apellido: document.getElementById("apellido").value,
+			dni: document.getElementById("dni").value,
+			legajo: document.getElementById("legajo").value,
+			fecNac: document.getElementById("fecNac").value,
+			sueldo: document.getElementById("sueldo").value,
+		});
+		console.log(response);
+
+		window.location.replace("/Empleado");
+	});
+</script>

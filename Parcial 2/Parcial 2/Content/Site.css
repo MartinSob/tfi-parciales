@@ -1,0 +1,10 @@
+﻿.centered-in-column {
+	display: flex;
+	align-items: center;
+}
+
+.subtotal {
+	border-top: solid 1px darkgray;
+	margin-top: 2rem;
+	padding: 0.5rem;
+}

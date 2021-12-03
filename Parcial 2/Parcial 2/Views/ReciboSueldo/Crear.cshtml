@@ -1,0 +1,197 @@
+﻿@using BLL;
+@using BE;
+
+<div class="jumbotron my-2">
+	<h1 class="display-4">
+		Crear recibo
+	</h1>
+</div>
+
+<form id="create">
+	<div class="mb-3">
+		<label for="periodo" class="form-label">Periodo</label>
+		<input type="date" class="form-control" id="periodo" required>
+	</div>
+	<div class="mb-3">
+		<label for="empleado" class="form-label">Empleado</label>
+		<select id="empleado" class="form-select" aria-label="Tipo" onchange="onEmpleadoChange()">
+			<option selected>Seleccione un empleado</option>
+			@foreach (Empleado e in new EmpleadoBl().listar()) {
+				<option value="@e.id">@e.apellido, @e.nombre</option>
+			}
+		</select>
+	</div>
+	<div class="mb-3">
+		<label for="sueldo" class="form-label">Sueldo empleado</label>
+		<input type="text" class="form-control" id="sueldo" disabled>
+	</div>
+
+	<div class="card my-2">
+		<div class="card-body">
+			<h6 class="card-title">Remuneraciones</h6>
+			@foreach (Concepto c in new ConceptoBl().listar().Where(c => c.tipo == "Remunerativo")) {
+
+				<div class="row my-1">
+					<div class="col-3 centered-in-column">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="" id="@c.id" name="remunerativos" onchange="onConceptoChange(@c.id)">
+							<label class="form-check-label" for="@c.id">
+								@c.descripcion [+<span id="cantidad-@c.id">@c.cantidad</span>%]
+							</label>
+						</div>
+					</div>
+					<div class="col-9">
+						<div class="input-group">
+							<span class="input-group-text" id="basic-addon1">$</span>
+							<input type="number" placeholder="Valor unitario" class="form-control" id="valorUnitario-@c.id" disabled onchange="onValorUnitarioChange()">
+						</div>
+					</div>
+				</div>
+			}
+			<div class="subtotal">
+				<h7>Subtotal: $ <strong><span id="remuneracionSubtotal">0</span></strong></h7>
+			</div>
+		</div>
+	</div>
+
+	<div class="card my-2">
+		<div class="card-body">
+			<h6 class="card-title">Descuentos</h6>
+			@foreach (Concepto c in new ConceptoBl().listar().Where(c => c.tipo == "Descuento")) {
+				<div class="row my-1">
+					<div class="col-3 centered-in-column">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="" id="@c.id" name="descuentos" onchange="onConceptoChange(@c.id)">
+							<label class="form-check-label" for="@c.id">
+								@c.descripcion [-<span id="cantidad-@c.id">@c.cantidad</span>%]
+							</label>
+						</div>
+					</div>
+					<div class="col-9">
+						<div class="input-group">
+							<span class="input-group-text" id="basic-addon1">$</span>
+							<input type="number" placeholder="Valor unitario" class="form-control" id="valorUnitario-@c.id" disabled onchange="onValorUnitarioChange()">
+						</div>
+					</div>
+				</div>
+			}
+			<div class="subtotal">
+				<h7>Subtotal: $ <strong><span id="descuentoSubtotal">0</span></strong></h7>
+			</div>
+		</div>
+	</div>
+
+	<div class="card my-2">
+		<div class="card-body">
+			<h6 class="card-title m-0">Total: $ <span id="total"></span></h6>
+		</div>
+	</div>
+
+	<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+<script>
+	let remunerativos = [];
+	let rValorUnitario = [];
+	let descuentos = [];
+	let dValorUnitario = [];
+	let total = 0;
+
+	document.getElementById("create").addEventListener("submit", async (event) => {
+		event.preventDefault();
+
+		const body = {
+			empleadoId: document.getElementById("empleado").value,
+			periodo: document.getElementById("periodo").value,
+			remunerativos: remunerativos,
+			rValorUnitario: rValorUnitario,
+			descuentos: descuentos,
+			dValorUnitario: dValorUnitario,
+			total: total
+		};
+
+		console.log(body);
+
+		const response = await post('/ReciboSueldo/CreateRecibo', {
+			empleadoId: document.getElementById("empleado").value,
+			periodo: document.getElementById("periodo").value,
+			remunerativos: remunerativos,
+			rValorUnitario: rValorUnitario,
+			descuentos: descuentos,
+			dValorUnitario: dValorUnitario,
+			total: total
+		});
+
+		console.log(response);
+
+		window.location.replace("/ReciboSueldo");
+	});
+
+	async function onEmpleadoChange() {
+		const id = document.getElementById("empleado").value;
+		const empleado = await get('/Empleado/Obtener/' + id);
+		console.log(empleado);
+		document.getElementById("sueldo").value = '$ ' + empleado.data.sueldo
+	}
+
+	async function onConceptoChange(id) {
+		const valorUnitarioInput = document.getElementById("valorUnitario-" + id);
+		valorUnitarioInput.disabled = !valorUnitarioInput.disabled;
+	}
+
+	function onValorUnitarioChange() {
+		calcularRemuneraciones();
+		calcularDescuentos();
+		calcularTotal();
+	}
+
+	function calcularRemuneraciones() {
+		const checkedBoxes = document.querySelectorAll('input[name=remunerativos]:checked');
+		let subtotal = 0;
+
+		remunerativos = []
+		rValorUnitario = []
+
+		checkedBoxes.forEach(box => {
+			if (box.checked) {
+				const cantidad = document.getElementById("cantidad-" + box.id).innerHTML;
+				const valorUnitario = document.getElementById("valorUnitario-" + box.id).value;
+				subtotal += valorUnitario * cantidad / 100;
+
+				remunerativos.push(box.id);
+				rValorUnitario.push(valorUnitario);
+			}
+		})
+
+		document.getElementById("remuneracionSubtotal").innerHTML = subtotal
+	}
+
+	function calcularDescuentos() {
+		const checkedBoxes = document.querySelectorAll('input[name=descuentos]:checked');
+		let subtotal = 0;
+
+		descuentos = []
+		dValorUnitario = []
+
+		checkedBoxes.forEach(box => {
+			if (box.checked) {
+				const cantidad = document.getElementById("cantidad-" + box.id).innerHTML;
+				const valorUnitario = document.getElementById("valorUnitario-" + box.id).value;
+				subtotal += valorUnitario * cantidad / 100;
+
+				descuentos.push(box.id);
+				dValorUnitario.push(valorUnitario);
+			}
+		})
+
+		document.getElementById("descuentoSubtotal").innerHTML = subtotal
+	}
+
+	function calcularTotal() {
+		const remuneracionSubtotal = document.getElementById("remuneracionSubtotal").innerHTML;
+		const descuentoSubtotal = document.getElementById("descuentoSubtotal").innerHTML;
+		total = remuneracionSubtotal - descuentoSubtotal
+		document.getElementById("total").innerHTML = total;
+	}
+</script>

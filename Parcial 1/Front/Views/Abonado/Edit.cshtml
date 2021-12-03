@@ -1,0 +1,54 @@
+﻿@using Entidades;
+@using Negocio;
+@model Entidades.Abonado
+
+<div class="jumbotron">
+	<h1>@Model.nombre</h1>
+</div>
+
+<div class="row">
+	<div class="col-12">
+		<div class="mb-3">
+			<label for="numero" class="form-label">Número</label>
+			<input type="text" class="form-control" id="numero" value="@Model.numero">
+		</div>
+
+		<div class="mb-3">
+			<label for="nombre" class="form-label">Nombre</label>
+			<input type="text" class="form-control" id="nombre" value="@Model.nombre">
+		</div>
+
+		<div class="mb-3">
+			<label for="dni" class="form-label">DNI</label>
+			<input type="text" class="form-control" id="dni" value="@Model.dni">
+		</div>
+
+		<div class="mb-3">
+			<select id="tipo" class="form-select" aria-label="Tipo">
+				@foreach (string tipo in Enum.GetNames(typeof(TipoTelefono))) {
+					if (Model.tipo.ToString() == tipo) {
+						<option value="@tipo" selected>@tipo</option>
+					} else { 
+						<option value="@tipo">@tipo</option>
+					}
+				}
+			</select>
+		</div>
+
+		<button onclick="guardar()" type="button" class="btn btn-outline-primary">✔</button>
+	</div>
+</div>
+
+<script>
+	const guardar = async () => {
+		await post('/Abonado/GuardarAbonado/', {
+			id: @Model.id,
+			idAbonado: @Model.idAbonado,
+			numero: document.getElementById("numero").value,
+			nombre: document.getElementById("nombre").value,
+			dni: document.getElementById("dni").value,
+			tipo: document.getElementById("tipo").value
+		});
+		window.location.href = "/Abonado";
+	}
+</script>

@@ -1,0 +1,45 @@
+﻿@using BLL;
+@using BE;
+
+<div class="jumbotron">
+	<h1 class="display-4">
+		Conceptos de recibo
+		<a href="/ConceptoRecibo/Crear" class="btn btn-outline-success">Crear</a>
+	</h1>
+</div>
+
+<div class="row">
+	<div class="col-12">
+
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Descripcion</th>
+					<th scope="col">Cantidad</th>
+					<th scope="col">Tipo</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (Concepto concepto in new ConceptoBl().listar()) {
+					<tr>
+						<td scope="row">@concepto.descripcion </td>
+						<td>@concepto.cantidad</td>
+						<td>@concepto.tipo</td>
+						<td>
+							<button onclick="eliminar(@concepto.id)" type="button" class="btn btn-outline-danger">❌</button>
+							<a href="/ConceptoRecibo/Actualizar/@concepto.id" class="btn btn-outline-secondary">✏</a>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script>
+	const eliminar = async (id) => {
+		await get('/ConceptoRecibo/Eliminar/' + id);
+		location.reload();
+	}
+</script>

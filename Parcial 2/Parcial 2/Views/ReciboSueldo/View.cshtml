@@ -1,0 +1,85 @@
+﻿@using BLL;
+@using BE;
+@model Recibo
+@{ 
+	Empleado empleado = new EmpleadoBl().listar(Model.empleado.id);
+	double subtotalRemunerativo = 0;
+	double subtotalDescuento = 0;
+}
+
+<div class="jumbotron my-2">
+	<h1 class="display-4">
+		Ver recibo
+	</h1>
+</div>
+
+<div class="mb-3">
+	<label for="periodo" class="form-label">Periodo</label>
+	<input type="date" class="form-control" value="@Model.periodo.ToString("yyyy-MM-d")" disabled>
+</div>
+
+<div class="mb-3">
+	<label for="empleado" class="form-label">Empleado</label>
+	<input type="text" class="form-control" value="@empleado.apellido, @empleado.nombre" disabled>
+</div>
+
+<div class="mb-3">
+	<label for="sueldo" class="form-label">Sueldo bruto</label>
+	<input type="text" class="form-control" value="@empleado.sueldo" disabled>
+</div>
+
+<div class="card my-2">
+	<div class="card-body">
+		<h6 class="card-title">Remuneraciones</h6>
+		@foreach (Concepto c in Model.remunerativos) {
+			subtotalRemunerativo += c.total;
+			<div class="row my-1">
+				<div class="col-3 centered-in-column">
+					<p class="m-0">
+						@c.descripcion [+<span id="cantidad-@c.id">@c.cantidad</span>%]
+					</p>
+				</div>
+				<div class="col-9">
+					<div class="input-group">
+						<span class="input-group-text" id="basic-addon1">$</span>
+						<input type="number" placeholder="Valor unitario" class="form-control" value="@c.valorUnitario" disabled>
+					</div>
+				</div>
+			</div>
+		}
+		<div class="subtotal">
+			<h7>Subtotal: $ <strong>@subtotalRemunerativo</strong></h7>
+		</div>
+	</div>
+</div>
+
+<div class="card my-2">
+	<div class="card-body">
+		<h6 class="card-title">Descuentos</h6>
+		@foreach (Concepto c in Model.descuentos) {
+			subtotalDescuento += c.total;
+			<div class="row my-1">
+				<div class="col-3 centered-in-column">
+					<p class="m-0">
+						@c.descripcion [-<span id="cantidad-@c.id">@c.cantidad</span>%]
+					</p>
+				</div>
+				<div class="col-9">
+					<div class="input-group">
+						<span class="input-group-text" id="basic-addon1">$</span>
+						<input type="number" placeholder="Valor unitario" class="form-control" value="@c.valorUnitario" disabled>
+					</div>
+				</div>
+			</div>
+		}
+		<div class="subtotal">
+			<h7>Subtotal: $ <strong>@subtotalDescuento</strong></h7>
+		</div>
+	</div>
+</div>
+
+<div class="card my-2">
+	<div class="card-body">
+		<h6 class="card-title m-0">Total neto: $ @Model.total</h6>
+	</div>
+</div>
